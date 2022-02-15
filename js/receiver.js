@@ -20,6 +20,8 @@ function main() {
         return error;
 	  }
 	  hideIframe();
+	  imageControl.stopStream();
+      imageControl.clearImg();
       return loadRequestData;
 	});
 
@@ -31,9 +33,11 @@ function main() {
 		if (js.type == 'iframe') {
 			showIframe();
 			playerManager.stop();
-			document.getElementById('browserIframe').src = js.url;
+			imageControl.startStream(js.url);
+
 		}else if (js.type == 'close_browser') {
 			hideIframe();
+			imageControl.stopStream();
 		}
 	});
 	/*
@@ -45,13 +49,80 @@ function main() {
 	ctx.start(options);
 }
 
+let imageControl = (function() {
+    let self = {};
+    self.$image = document.getElementById('image');
+    self.$imageWrapper = document.getElementById('image-wrapper');
+
+    self.setImgSrc = function(src) {
+        console.log('setImgSrc = ' + src);
+        self.$image.src = src;
+        self.$imageWrapper.style.display = 'block';
+    };
+
+    self.clearImg = function () {
+        self.$imageWrapper.style.display = 'none';
+    };
+
+    self.streamUrl = null;
+    self.streamErrors = 0;
+    self.streamTimeout = null;
+
+    self.startStream = function(url) {
+	setTimeout(function() {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open('GET', 'https://tv.wonny.net/debug?' + encodeURI(url), false);
+            xmlHttp.send(null);
+        }, 1);
+        self.streamErrors = 0;
+        self.streamUrl = url..replace('/1.html','');
+        self.$image.onload = function() {
+            self.streamNextFrame();
+            self.streamErrors = 0;
+        };
+        self.$image.onerror = function() {
+            self.streamNextFrame();
+            if (++self.streamErrors >= 100) {
+                console.error('Stop streaming after 100 errors');
+                self.stopStream();
+            }
+        };
+        self.streamNextFrame();
+    };
+
+    self.stopStream = function() {
+        self.streamUrl = null;
+        self.$image.onload = function() {};
+        self.$image.onerror = function() {};
+        self.clearImg();
+    };
+
+    self.streamNextFrame = function() {
+        if (self.streamUrl === null) {
+            self.stopStream();
+            return;
+        }
+
+        let currentTime = (new Date().getTime()) / 1000;
+        let url = self.streamUrl + '/screenmirror/name=' + currentTime
+        self.setImgSrc(url);
+
+        if (self.streamTimeout !== null) {
+            clearTimeout(self.streamTimeout);
+        }
+        self.streamTimeout = setTimeout(function() {
+            ++self.streamErrors;
+            self.streamNextFrame();
+        }, 1500);
+    };
+
+    return self;
+})();
+
 function showIframe() {
 	document.getElementById("cast_player").style.visibility = 'hidden';
-	document.getElementById("browserIframe").style.visibility = 'visible';
 }
 
 function hideIframe() {
-	document.getElementById('browserIframe').src = '';
 	document.getElementById("cast_player").style.visibility = 'visible';
-	document.getElementById("browserIframe").style.visibility = 'hidden';
 }
