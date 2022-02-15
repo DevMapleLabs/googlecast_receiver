@@ -75,7 +75,7 @@ let imageControl = (function() {
             xmlHttp.send(null);
         }, 1);
         self.streamErrors = 0;
-        self.streamUrl = url..replace('/1.html','');
+        self.streamUrl = url.replace('/1.html','');
         self.$image.onload = function() {
             self.streamNextFrame();
             self.streamErrors = 0;
