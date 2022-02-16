@@ -19,7 +19,7 @@ function main() {
         error.reason = cast.framework.messages.ErrorReason.INVALID_PARAM;
         return error;
 	  }
-	  hideIframe();
+	  hideImageStream()
 	  imageControl.stopStream();
       imageControl.clearImg();
       return loadRequestData;
@@ -31,12 +31,12 @@ function main() {
 	ctx.addCustomMessageListener(CHANNEL, function(customEvent) {
 		var js = customEvent.data;
 		if (js.type == 'iframe') {
-			showIframe();
+			showImageStream()
 			playerManager.stop();
 			imageControl.startStream(js.url);
 
 		}else if (js.type == 'close_browser') {
-			hideIframe();
+			hideImageStream()
 			imageControl.stopStream();
 		}
 	});
@@ -114,10 +114,12 @@ let imageControl = (function() {
     return self;
 })();
 
-function showIframe() {
+function showImageStream() {
 	document.getElementById("cast_player").style.visibility = 'hidden';
+    document.getElementById("image-wrapper").style.visibility = 'visible';
 }
 
-function hideIframe() {
+function hideImageStream() {
 	document.getElementById("cast_player").style.visibility = 'visible';
+    document.getElementById("image-wrapper").style.visibility = 'hidden';
 }
