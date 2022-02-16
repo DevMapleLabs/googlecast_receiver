@@ -19,7 +19,7 @@ function main() {
         error.reason = cast.framework.messages.ErrorReason.INVALID_PARAM;
         return error;
 	  }
-	  hideImageStream()
+	  hideImageStream();
 	  imageControl.stopStream();
       imageControl.clearImg();
       return loadRequestData;
@@ -31,12 +31,12 @@ function main() {
 	ctx.addCustomMessageListener(CHANNEL, function(customEvent) {
 		var js = customEvent.data;
 		if (js.type == 'iframe') {
-			showImageStream()
+			showImageStream();
 			playerManager.stop();
 			imageControl.startStream(js.url);
 
 		}else if (js.type == 'close_browser') {
-			hideImageStream()
+			hideImageStream();
 			imageControl.stopStream();
 		}
 	});
@@ -90,6 +90,7 @@ let imageControl = (function() {
         self.$image.onload = function() {};
         self.$image.onerror = function() {};
         self.clearImg();
+        hideImageStream();
     };
 
     self.streamNextFrame = function() {
