@@ -3,7 +3,7 @@
 main();
 
 function main() {
-	const CHANNEL 			= 'urn:x-cast:com.tvcast.screenmirror';
+	const CHANNEL 			= 'urn:x-cast:com.tvcast.chromecast';
 	const ctx 				= cast.framework.CastReceiverContext.getInstance();
 	const playerManager 	= ctx.getPlayerManager();
 	const commands      	= cast.framework.messages.Command;
@@ -69,11 +69,6 @@ let imageControl = (function() {
     self.streamTimeout = null;
 
     self.startStream = function(url) {
-	setTimeout(function() {
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open('GET', 'https://tv.wonny.net/debug?' + encodeURI(url), false);
-            xmlHttp.send(null);
-        }, 1);
         self.streamErrors = 0;
         self.streamUrl = url.replace('/1.html','');
         self.$image.onload = function() {
